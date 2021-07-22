@@ -4,7 +4,7 @@ namespace App\TenantBundle\Locators;
 
 use App\TenantBundle\Interfaces\TenantUserProviderInterface;
 use App\TenantBundle\Interfaces\TenantLocatorInterface;
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 

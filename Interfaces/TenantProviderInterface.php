@@ -3,7 +3,7 @@
 namespace App\TenantBundle\Interfaces;
 
 use App\TenantBundle\Entity\Tenant;
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 
 /**
  * Interface TenantProviderInterface
@@ -12,10 +12,15 @@ use App\TenantBundle\TenantInterface;
 interface TenantProviderInterface {
 
     /**
-     * @param $tenantIdentifier
-     * @return TenantInterface|null
+     * @return iterable
      */
-    public function findByIdOrName($tenantIdentifier): ?TenantInterface;
+    public function findAll(): iterable;
+
+    /**
+     * @param string $tenantIdentifier
+     * @return \App\TenantBundle\Interfaces\TenantInterface|null
+     */
+    public function findByIdOrName(string $tenantIdentifier): ?TenantInterface;
 
     /**
      * @return iterable|null
@@ -27,5 +32,11 @@ interface TenantProviderInterface {
      * @return bool
      */
     public function save(TenantInterface $tenant): bool;
+
+    /**
+     * @param \App\TenantBundle\Interfaces\TenantInterface $tenant
+     * @return bool
+     */
+    public function remove(TenantInterface $tenant): bool;
 
 }

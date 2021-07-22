@@ -3,7 +3,7 @@
 namespace App\TenantBundle\SwitchHandlers;
 
 use App\TenantBundle\Interfaces\DirectoryInterface;
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 use App\TenantBundle\Interfaces\TenantSwitchHandlerInterface;
 
 /**

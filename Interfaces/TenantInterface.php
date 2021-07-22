@@ -1,11 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\TenantBundle;
-
-use App\TenantBundle\Interfaces\EnabledInterface;
-use App\TenantBundle\Interfaces\NameInterface;
-use App\TenantBundle\Interfaces\ResourceInterface;
-use App\TenantBundle\Interfaces\SettingsInterface;
+namespace App\TenantBundle\Interfaces;
 
 /**
  * Interface TenantInterface
@@ -13,5 +8,16 @@ use App\TenantBundle\Interfaces\SettingsInterface;
  */
 interface TenantInterface extends ResourceInterface, NameInterface, EnabledInterface, SettingsInterface {
 
+    /**
+     * @param TenantUserInterface $tenantUser
+     * @return $this
+     */
+    public function removeUser(TenantUserInterface $tenantUser): self;
+
+    /**
+     * @param TenantUserInterface $tenantUser
+     * @return $this
+     */
+    public function addUser(TenantUserInterface $tenantUser): self;
 
 }

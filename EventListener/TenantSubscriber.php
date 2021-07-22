@@ -6,7 +6,7 @@ use App\TenantBundle\Interfaces\TenantProviderInterface;
 use App\TenantBundle\Component\TenantResolver;
 use App\TenantBundle\Exceptions\TenantLoadingException;
 use App\TenantBundle\Locators\LocatorChain;
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestMatcher;

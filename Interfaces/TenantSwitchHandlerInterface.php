@@ -2,8 +2,6 @@
 
 namespace App\TenantBundle\Interfaces;
 
-use App\TenantBundle\TenantInterface;
-
 /**
  * Interface TenantSwitchHandlerInterface
  * @package App\TenantBundle\Interfaces

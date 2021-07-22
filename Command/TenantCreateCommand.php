@@ -2,8 +2,8 @@
 
 namespace App\TenantBundle\Command;
 
-use Helix\CommandBundle\Engine\CommandRunner;
-use App\TenantBundle\Factory\TenantFactory;
+use App\TenantBundle\Factory\ResourceAbstractFactory;
+use App\TenantBundle\Engine\CommandRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,24 +15,25 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class TenantCreateCommand extends Command
 {
-    private TenantFactory $factory;
+    private ResourceAbstractFactory $factory;
     private CommandRunner $commandRunner;
+    private ?string $name;
 
     /**
      * TenantCreateCommand constructor.
-     *
-     * @param TenantFactory $factory
+     * @param ResourceAbstractFactory $factory
      * @param CommandRunner $commandRunner
-     * @param null|string $name
+     * @param string|null $name
      */
     public function __construct(
-        TenantFactory $factory,
+        ResourceAbstractFactory $factory,
         CommandRunner $commandRunner,
         ?string $name = null
     ) {
         parent::__construct($name);
         $this->factory = $factory;
         $this->commandRunner = $commandRunner;
+        $this->name = $name;
     }
 
     protected function configure(): void
@@ -45,19 +46,9 @@ class TenantCreateCommand extends Command
                 'Email'
             )
             ->addArgument(
-                'company',
-                InputArgument::REQUIRED,
-                'Company name'
-            )
-            ->addArgument(
                 'firstname',
                 InputArgument::REQUIRED,
                 'First name'
-            )
-            ->addArgument(
-                'lastname',
-                InputArgument::REQUIRED,
-                'Last name'
             );
     }
 
@@ -72,12 +63,10 @@ class TenantCreateCommand extends Command
     {
         $normalizedData = [
             'email' => $input->getArgument('email'),
-            'company' => $input->getArgument('company'),
-            'firstname' => $input->getArgument('firstname'),
-            'lastname' => $input->getArgument('lastname'),
+            'firstname' => $input->getArgument('firstname')
         ];
     
-        $tenant = $this->factory->withData($normalizedData)->createNew();
+        $tenant = $this->factory->createTenantFactory()->withData($normalizedData)->createNew();
     
         $databaseExitCode = $this->commandRunner->runCommand('doctrine:database:create', sprintf('--tenant=%s --if-not-exists', $tenant->getId()));
         if ($databaseExitCode !== 0) {

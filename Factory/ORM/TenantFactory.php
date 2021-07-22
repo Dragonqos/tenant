@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace App\TenantBundle\Factory;
+namespace App\TenantBundle\Factory\ORM;
 
 use App\TenantBundle\Entity\Tenant;
 use App\TenantBundle\Interfaces\FactoryInterface;
 use App\TenantBundle\Interfaces\TenantProviderInterface;
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**

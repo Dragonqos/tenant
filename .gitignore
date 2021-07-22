@@ -1,2 +1,5 @@
+.env
 /.idea
 /vendor/
+/docker/db/*
+/docker/runtime/*

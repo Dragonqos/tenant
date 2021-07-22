@@ -2,9 +2,8 @@
 
 namespace App\TenantBundle\Command;
 
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\ObjectManager;
-use App\TenantBundle\Entity\Tenant;
+use App\TenantBundle\Interfaces\TenantInterface;
+use App\TenantBundle\Interfaces\TenantProviderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,19 +15,19 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class TenantEnableCommand extends Command
 {
-    private ManagerRegistry $managerRegistry;
+    private TenantProviderInterface $provider;
 
     /**
      * TenantEnableCommand constructor.
      *
-     * @param ManagerRegistry $managerRegistry
+     * @param TenantProviderInterface $provider
      * @param null|string $name
      */
     public function __construct(
-        ManagerRegistry $managerRegistry,
+        TenantProviderInterface $provider,
         ?string $name = null
     ) {
-        $this->managerRegistry = $managerRegistry;
+        $this->provider = $provider;
         parent::__construct($name);
     }
 
@@ -52,41 +51,19 @@ class TenantEnableCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $tenantIdent = $input->getArgument('tenant');
-    
-        $em = $this->getManager(Tenant::class);
-    
-        /** @var Tenant $tenant */
-        $tenant = $em->getRepository(Tenant::class)->findByIdOrName($tenantIdent);
+
+        /** @var TenantInterface $tenant */
+        $tenant = $this->provider->findByIdOrName((string) $tenantIdent);
     
         if (!$tenant) {
             $output->writeln('<bg=red;options=bold>Tenant not found</>');
             return 1;
         }
-        
-        $tenant->enable();
-        $em->flush();
+
+        $tenant->setEnabled(true);
+        $this->provider->save($tenant);
     
         $output->writeln('<info>Completed</info>');
         return 0;
-    }
-    
-    /**
-     * @param string $className
-     *
-     * @return ObjectManager
-     *
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
-     * @throws \LogicException
-     */
-    private function getManager(string $className): ObjectManager
-    {
-        $manager = $this->managerRegistry->getManagerForClass($className);
-        
-        if (!$manager instanceof ObjectManager) {
-            throw new \LogicException('');
-        }
-        
-        return $manager;
     }
 }

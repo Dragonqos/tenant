@@ -4,7 +4,7 @@ namespace App\TenantBundle\Locators;
 
 use App\TenantBundle\Interfaces\TenantUserInterface;
 use App\TenantBundle\Interfaces\TenantUserProviderInterface;
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Helix\SuperuserBundle\Entity\Superuser;
 use App\TenantBundle\Entity\Tenant;

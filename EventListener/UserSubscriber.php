@@ -2,7 +2,7 @@
 
 namespace App\TenantBundle\EventListener;
 
-use App\TenantBundle\Factory\UserFactory;
+use App\TenantBundle\Factory\ResourceAbstractFactory;
 use App\TenantBundle\Interfaces\TenantUserInterface;
 use App\TenantBundle\Interfaces\TenantUserProviderInterface;
 use Doctrine\Common\EventSubscriber;
@@ -27,22 +27,22 @@ class UserSubscriber implements EventSubscriber
 
     private TenantUserProviderInterface $provider;
     private TenantState $tenantState;
-    private UserFactory $userFactory;
+    private ResourceAbstractFactory $factory;
 
     /**
      * UserSubscriber constructor.
      * @param TenantUserProviderInterface $provider
      * @param TenantState $tenantState
-     * @param UserFactory $userFactory
+     * @param ResourceAbstractFactory $factory
      */
     public function __construct(
         TenantUserProviderInterface $provider,
         TenantState $tenantState,
-        UserFactory $userFactory
+        ResourceAbstractFactory $factory
     ) {
         $this->provider = $provider;
         $this->tenantState = $tenantState;
-        $this->userFactory = $userFactory;
+        $this->factory = $factory;
     }
 
     /**
@@ -79,20 +79,19 @@ class UserSubscriber implements EventSubscriber
         if ($object instanceof UserInterface && null !== $tenant) {
 
             $target = $this->findTarget($object);
+            $tenant = $this->tenantState->getTenant();
 
             if (!$target) {
-                $target = $this->userFactory->create();
+                $target = $this->factory->createTenantUserFactory()->withData([
+                    'tenant' => $tenant,
+                    'uid' => $object->getId()
+                ])->createNew();
                 if (!$this->tenantState->isLoaded()) {
                     throw TenantLoadingException::tenantNotFoundException('Tenant has not been loaded yet.');
                 }
             }
 
-            $tenant = $this->tenantState->getTenant();
-            $target->setTenant($tenant);
-            $target->setUid($object->getId());
-
             $this->syncObjects($object, $target);
-
             $this->provider->save($target);
         }
     }

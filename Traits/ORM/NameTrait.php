@@ -2,8 +2,6 @@
 
 namespace App\TenantBundle\Traits\ORM;
 
-use App\TenantBundle\Entity\Tenant;
-use App\TenantBundle\Interfaces\EnabledInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;

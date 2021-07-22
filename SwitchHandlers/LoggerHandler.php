@@ -4,7 +4,7 @@ namespace App\TenantBundle\SwitchHandlers;
 
 use App\TenantBundle\Logger\TenantLoggerProcessor;
 use App\TenantBundle\Interfaces\TenantSwitchHandlerInterface;
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 
 /**
  * Class LoggerHandler

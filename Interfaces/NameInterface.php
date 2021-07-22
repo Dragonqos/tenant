@@ -9,13 +9,13 @@ namespace App\TenantBundle\Interfaces;
 interface NameInterface {
 
     /**
-     * @param int|null $id
-     * @return mixed
+     * @param string $name
+     * @return $this
      */
-    public function setId(?int $id): self;
+    public function setName(string $name): self;
 
     /**
-     * @return int|null
+     * @return string
      */
-    public function getId(): ?int;
+    public function getName(): string;
 }

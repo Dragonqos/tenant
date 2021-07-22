@@ -1,33 +1,32 @@
 version: '3.7'
 services:
   php:
-    container_name: tenant_php
+    container_name: multitenant_php
     build: ./docker/php
     volumes:
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./docker/runtime/.config/composer:/var/www/.composer
       - ~/.ssh:/root/.ssh
-      - .:/var/www/sf:cached
-#      - /var/www/sf/node_modules # exclude node modules  => MAC optimization - disable it on linux
-#      - /var/www/sf/vendor       # exclude vendors       => MAC optimization - disable it on linux
-      - symfony_cache:/tmp/tenant:rw
-    working_dir: /var/www/tenant
+      - .:/var/www/multitenant:cached
+#      - /var/www/multitenant/node_modules # exclude node modules  => MAC optimization - disable it on linux
+#      - /var/www/multitenant/vendor       # exclude vendors       => MAC optimization - disable it on linux
+      - symfony_cache:/tmp/multitenant:rw
+    working_dir: /var/www/multitenant
     networks:
       - default
-      - shared
     depends_on:
       - mysql
       - mongo
       - redis
 
   redis:
-    container_name: tenant_redis
+    container_name: multitenant_redis
     image: redis
     networks:
       - default
 
   mysql:
-    container_name: tenant_mysql
+    container_name: multitenant_mysql
     image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: secret
@@ -41,12 +40,12 @@ services:
     expose:
       - 3306
     ports:
-      - 3308:3306
+      - 13306:3306
     networks:
       - default
 
   mongo:
-    container_name: tenant_mongo
+    container_name: multitenant_mongo
     image: mongo:4.2
 #    restart: always
     environment:
@@ -59,7 +58,7 @@ services:
     expose:
       - 27017
     ports:
-      - 27019:27017
+      - 27117:27017
     networks:
       - default
 

@@ -2,12 +2,12 @@
 
 namespace App\TenantBundle\Manager;
 
+use App\TenantBundle\Factory\ResourceAbstractFactory;
 use Doctrine\Persistence\ManagerRegistry;
 use Helix\CommandBundle\Engine\CommandRunner;
 use Helix\PlatformBundle\Entity\Repository\RoleRepository;
 use Helix\PlatformBundle\Entity\User;
 use App\TenantBundle\Component\TenantResolver;
-use App\TenantBundle\Factory\TenantFactory;
 use App\TenantBundle\Repository\TenantInstallRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -23,63 +23,34 @@ class TenantInstallManager
     const OWNER_CREATED = 200;
     const COMPLETED = 255;
 
-    /**
-     * @var TenantInstallRepository
-     */
-    private $repository;
-
-    /**
-     * @var TenantFactory
-     */
-    private $tenantFactory;
-
-    /**
-     * @var TenantResolver
-     */
-    private $resolver;
-
-    /**
-     * @var array
-     */
-    private $installationState;
-
-    /**
-     * @var CommandRunner
-     */
-    private $commandRunner;
-
-    /**
-     * @var ManagerRegistry
-     */
-    private $managerRegistry;
-
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $passwordEncoder;
+    private TenantInstallRepository $repository;
+    private TenantResolver $resolver;
+    private array $installationState = [];
+    private CommandRunner $commandRunner;
+    private ManagerRegistry $managerRegistry;
+    private ResourceAbstractFactory $factory;
 
     /**
      * TenantInstallManager constructor.
-     *
-     * @param TenantInstallRepository      $repository
-     * @param TenantResolver               $resolver
-     * @param TenantFactory                $tenantFactory
-     * @param CommandRunner                $commandRunner
-     * @param ManagerRegistry              $managerRegistry
+     * @param TenantInstallRepository $repository
+     * @param TenantResolver $resolver
+     * @param ResourceAbstractFactory $factory
+     * @param CommandRunner $commandRunner
+     * @param ManagerRegistry $managerRegistry
      */
     public function __construct(
         TenantInstallRepository $repository,
         TenantResolver $resolver,
-        TenantFactory $tenantFactory,
+        ResourceAbstractFactory $factory,
         CommandRunner $commandRunner,
         ManagerRegistry $managerRegistry
     )
     {
         $this->repository = $repository;
         $this->resolver = $resolver;
-        $this->tenantFactory = $tenantFactory;
         $this->commandRunner = $commandRunner;
         $this->managerRegistry = $managerRegistry;
+        $this->factory = $factory;
     }
 
     /**
@@ -104,9 +75,7 @@ class TenantInstallManager
                 }
             }
         } catch(\Throwable $exception) {
-
             $this->repository->putErrorMessage($uuid, $exception->getMessage());
-//            dd('lol2', $exception->getMessage(), $exception->getTraceAsString());
             return false;
         }
 
@@ -114,8 +83,8 @@ class TenantInstallManager
     }
 
     /**
-     * @throws \Doctrine\ODM\MongoDB\DocumentNotFoundException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return bool
+     * @throws \App\TenantBundle\Exceptions\AccessDeniedException
      * @throws \App\TenantBundle\Exceptions\TenantLoadingException
      */
     private function createTenant(): bool
@@ -131,7 +100,7 @@ class TenantInstallManager
             $uuid = $this->installationState[TenantInstallRepository::FIELD_UUID];
             $normalizedData = $this->installationState[TenantInstallRepository::FIELD_NORMALIZED_DATA];
 
-            $tenant = $this->tenantFactory->withData($normalizedData)->createNew();
+            $tenant = $this->factory->createTenantFactory()->withData($normalizedData)->createNew();
 
             $this->repository->changeTenant($uuid, $tenant->getId());
             $this->repository->changeState($uuid, self::TENANT_CREATED, 'Account created');

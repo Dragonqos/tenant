@@ -3,7 +3,7 @@
 namespace App\TenantBundle\Component;
 
 use App\TenantBundle\Interfaces\TenantProviderInterface;
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 use App\TenantBundle\Exceptions\AccessDeniedException;
 use App\TenantBundle\Exceptions\TenantLoadingException;
 use App\TenantBundle\Interfaces\TenantSwitcherInterface;
@@ -68,7 +68,7 @@ class TenantResolver implements TenantSwitcherInterface
                 return true;
             }
 
-            $tenant = $this->provider->findByIdOrName($tenantId);
+            $tenant = $this->provider->findByIdOrName((string) $tenantId);
 
             if (!$tenant instanceof TenantInterface) {
                 throw TenantLoadingException::tenantNotFoundException(sprintf('Tenant "%s" id or name not found.', $tenantId));

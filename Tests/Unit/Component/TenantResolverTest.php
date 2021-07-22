@@ -2,11 +2,9 @@
 
 namespace App\TenantBundle\Tests\Unit\Component;
 
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\EntityManager;
+use App\TenantBundle\Interfaces\TenantProviderInterface;
 use App\TenantBundle\Component\TenantResolver;
 use App\TenantBundle\Component\TenantState;
-use App\TenantBundle\Entity\Repository\TenantRepository;
 use App\TenantBundle\Entity\Tenant;
 use App\TenantBundle\Interfaces\TenantSwitchHandlerInterface;
 use PHPUnit\Framework\TestCase;
@@ -17,88 +15,68 @@ use PHPUnit\Framework\TestCase;
  */
 class TenantResolverTest extends TestCase
 {
-    public function testInit()
-    {
-        $managerRegistryMock = self::getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-        $resolver = new TenantResolver(new TenantState(), $managerRegistryMock);
 
-        self::assertInstanceOf(TenantResolver::class, $resolver);
+    private \PHPUnit\Framework\MockObject\MockObject $provider;
+    private TenantResolver $resolver;
+
+    public function setUp()
+    {
+        $this->provider = self::getMockBuilder(TenantProviderInterface::class)->disableOriginalConstructor()->getMockForAbstractClass();
+        $this->resolver = new TenantResolver(new TenantState(), $this->provider);
     }
 
-    public function testPushHandlers()
+    public function test_should_accept_handlers()
     {
-        $managerRegistryMock = self::getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-        $tenantHandlerMock = self::getMockBuilder(TenantSwitchHandlerInterface::class)->getMockForAbstractClass();
+        $mock = self::getMockBuilder(TenantSwitchHandlerInterface::class)->getMockForAbstractClass();
+        $this->resolver->pushHandler($mock);
 
-        $resolver = new TenantResolver(new TenantState(), $managerRegistryMock);
-        $resolver->pushHandler($tenantHandlerMock);
+        $reflection = new \ReflectionClass($this->resolver);
+        $prop = $reflection
+            ->getProperty('handlers');
+        $prop->setAccessible(true);
+
+        $handlers = $prop->getValue($this->resolver);
+        self::assertCount(1, $handlers);
     }
 
-    public function testGetLoadedTenantReturnsNull()
+    public function test_should_return_null_when_nothing_loaded()
     {
-        $managerRegistryMock = self::getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-        $resolver = new TenantResolver(new TenantState(), $managerRegistryMock);
-
-        self::assertNull($resolver->getLoadedTenant());
+        self::assertNull($this->resolver->getLoadedTenant());
     }
 
-    /**
-     * @expectedException \App\TenantBundle\Exceptions\TenantLoadingException
-     * @expectedExceptionMessage Tenant "1" id or name not found.
-     */
-    public function testUseTenantREPOThrowsException()
+    public function test_should_throw_error_when_tenant_not_found()
     {
-        $repoMock = self::getMockBuilder(TenantRepository::class)->disableOriginalConstructor()->setMethods(['findByIdOrName'])->getMock();
-        $managerMock = self::getMockBuilder(EntityManager::class)->disableOriginalConstructor()->setMethods(['getRepository'])->getMock();
-        $managerRegistryMock = self::getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->setMethods(['getManagerForClass'])->getMockForAbstractClass();
+        self::expectException(\App\TenantBundle\Exceptions\TenantLoadingException::class);
+        self::expectExceptionMessage('Tenant "1" id or name not found.');
 
-        $managerRegistryMock->expects(self::once())->method('getManagerForClass')->with(Tenant::class)->willReturn($managerMock);
-        $managerMock->expects(self::once())->method('getRepository')->with(Tenant::class)->willReturn($repoMock);
-        $repoMock->expects(self::once())->method('findByIdOrName')->with(1)->willReturn(null);
-
-        $resolver = new TenantResolver(new TenantState(), $managerRegistryMock);
-        $resolver->useTenant(1);
+        $this->provider->expects(self::once())->method('findByIdOrName')->with('1')->willReturn(null);
+        $this->resolver->useTenant(1);
     }
 
-    public function testUseTenantWhenNoHandlersRegistered()
+    public function test_should_apply_tenant_without_executing_handlers()
     {
-        $repoMock = self::getMockBuilder(TenantRepository::class)->disableOriginalConstructor()->setMethods(['findByIdOrName'])->getMock();
-        $managerMock = self::getMockBuilder(EntityManager::class)->disableOriginalConstructor()->setMethods(['getRepository'])->getMock();
-        $managerRegistryMock = self::getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->setMethods(['getManagerForClass'])->getMockForAbstractClass();
-
-        $managerRegistryMock->expects(self::once())->method('getManagerForClass')->with(Tenant::class)->willReturn($managerMock);
-        $managerMock->expects(self::once())->method('getRepository')->with(Tenant::class)->willReturn($repoMock);
-
-        $repoMock->expects(self::once())->method('findByIdOrName')->with(1)->willReturn(new Tenant());
-
-        $resolver = new TenantResolver(new TenantState(), $managerRegistryMock);
-        $result = $resolver->useTenant(1);
+        $this->provider->expects(self::once())->method('findByIdOrName')->with('1')->willReturn(new Tenant());
+        $result = $this->resolver->useTenant(1);
 
         self::assertFalse($result);
     }
 
-    public function testUseTenantWhenHandlersWereRegistered()
+    public function test_should_apply_handlers()
     {
-        $repoMock = self::getMockBuilder(TenantRepository::class)->disableOriginalConstructor()->setMethods(['findByIdOrName'])->getMock();
-        $managerMock = self::getMockBuilder(EntityManager::class)->disableOriginalConstructor()->setMethods(['getRepository'])->getMock();
-        $managerRegistryMock = self::getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->setMethods(['getManagerForClass'])->getMockForAbstractClass();
-        $tenantHandlerMock = self::getMockBuilder(TenantSwitchHandlerInterface::class)->getMockForAbstractClass();
-
         $tenant = new Tenant();
         $tenant->setId(1);
         $tenant->setName('test');
 
-        $managerRegistryMock->expects(self::once())->method('getManagerForClass')->with(Tenant::class)->willReturn($managerMock);
-        $managerMock->expects(self::once())->method('getRepository')->with(Tenant::class)->willReturn($repoMock);
-        $repoMock->expects(self::once())->method('findByIdOrName')->with(1)->willReturn($tenant);
+        $mock = self::getMockBuilder(TenantSwitchHandlerInterface::class)->getMockForAbstractClass();
+        $mock->expects(self::at(0))->method('isHandling')->with($tenant)->willReturn(true);
+        $mock->expects(self::at(1))->method('handle')->with($tenant)->willReturn(null);
 
-        $tenantHandlerMock->expects(self::once())->method('isHandling')->willReturn(true);
-        $tenantHandlerMock->expects(self::once())->method('handle')->willReturn(null);
+        $this->provider->expects(self::once())->method('findByIdOrName')->with('1')->willReturn($tenant);
+        $this->resolver->pushHandler($mock);
 
-        $resolver = new TenantResolver(new TenantState(), $managerRegistryMock);
-        $resolver->pushHandler($tenantHandlerMock);
-        $result = $resolver->useTenant(1);
+        $result = $this->resolver->useTenant(1);
 
         self::assertTrue($result);
+        self::assertTrue($this->resolver->isTenantLoaded());
     }
 }

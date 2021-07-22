@@ -2,13 +2,22 @@
 
 namespace App\TenantBundle\Interfaces;
 
-use App\TenantBundle\TenantInterface;
-
 /**
  * Interface TenantUserInterface
  * @package App\TenantBundle\Interfaces
  */
 interface TenantUserInterface {
+
+    /**
+     * @return int
+     */
+    public function getUid(): int;
+
+    /**
+     * @param int $uid
+     * @return mixed
+     */
+    public function setUid(int $uid);
 
     /**
      * @param TenantInterface $tenant

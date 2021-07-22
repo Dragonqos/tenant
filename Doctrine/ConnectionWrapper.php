@@ -16,7 +16,7 @@ use Doctrine\DBAL\Events;
 class ConnectionWrapper extends Connection
 {
     private bool $isConnected = false;
-    protected array $_params = [];
+    protected iterable $_params = [];
 
     /**
      * ConnectionWrapper constructor.

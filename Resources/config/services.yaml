@@ -54,17 +54,19 @@ services:
     App\TenantBundle\Doctrine\ConnectionWrapper: ~
 
     # FACTORY
-
-    App\TenantBundle\Factory\TenantFactory:
-        public: true
+    App\TenantBundle\Factory\ResourceAbstractFactory: 'App\TenantBundle\Factory\ORM\ORMFactory'
+    App\TenantBundle\Factory\ORM\ORMFactory:
+        arguments:
+            - 'App\TenantBundle\Factory\ORM\TenantFactory'
+            - 'App\TenantBundle\Factory\ORM\TenantUserFactory'
+    App\TenantBundle\Factory\ORM\TenantFactory:
         arguments:
             $host: '%env(DATABASE_HOST)%'
             $user: '%env(DATABASE_USER)%'
             $password: '%env(DATABASE_PASSWORD)%'
             $port: '%env(DATABASE_PORT)%'
 
-    App\TenantBundle\Factory\TenantUserFactory:
-        public: true
+    App\TenantBundle\Factory\ORM\TenantUserFactory: ~
 
 
     # Resolver

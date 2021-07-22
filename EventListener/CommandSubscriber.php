@@ -2,14 +2,10 @@
 
 namespace App\TenantBundle\EventListener;
 
+use App\TenantBundle\Interfaces\TenantInterface;
 use App\TenantBundle\Interfaces\TenantProviderInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use App\TenantBundle\Component\TenantResolver;
-use App\TenantBundle\Entity\Repository\TenantRepository;
-use App\TenantBundle\Entity\Tenant;
 use App\TenantBundle\Exceptions\TenantLoadingException;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -34,8 +30,11 @@ class CommandSubscriber implements EventSubscriberInterface
      * @param TenantResolver $tenantResolver
      * @param iterable $commands
      */
-    public function __construct(TenantProviderInterface $provider, TenantResolver $tenantResolver, iterable $commands)
-    {
+    public function __construct(
+        TenantProviderInterface $provider,
+        TenantResolver $tenantResolver,
+        iterable $commands
+    ) {
         $this->provider = $provider;
         $this->tenantResolver = $tenantResolver;
         $this->commands = $commands;
@@ -76,10 +75,10 @@ class CommandSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /** @var Tenant $tenant */
+        /** @var TenantInterface $tenant */
         $tenant = $this->provider->findByIdOrName($tenantId);
 
-        if (!$tenant instanceof Tenant) {
+        if (!$tenant instanceof TenantInterface) {
             throw TenantLoadingException::tenantNotFoundException(sprintf('Tenant "%s" id or name not found.', $tenantId));
         }
 

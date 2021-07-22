@@ -2,7 +2,7 @@
 
 namespace App\TenantBundle\SwitchHandlers;
 
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 use Doctrine\DBAL\Exception\ConnectionException;
 use Doctrine\Persistence\ManagerRegistry;
 use App\TenantBundle\Doctrine\ConnectionWrapper;

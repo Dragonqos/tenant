@@ -5,6 +5,7 @@ namespace App\TenantBundle\Entity;
 use App\TenantBundle\Interfaces\TenantUserInterface;
 use App\TenantBundle\Model\TenantUserModel;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\TenantBundle\Interfaces\TenantInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -32,7 +33,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="tenant_users")
  * @ORM\HasLifecycleCallbacks()
  */
-class TenantUser extends TenantUserModel implements TenantUserInterface
+class TenantUser implements TenantUserInterface
 {
     /**
      * @var int
@@ -59,19 +60,21 @@ class TenantUser extends TenantUserModel implements TenantUserInterface
     }
 
     /**
-     * @return Tenant
+     * @return TenantInterface
      */
-    public function getTenant(): Tenant
+    public function getTenant(): TenantInterface
     {
         return $this->tenant;
     }
 
     /**
-     * @param Tenant $tenant
+     * @param TenantInterface $tenant
      */
-    public function setTenant(Tenant $tenant)
+    public function setTenant(TenantInterface $tenant): self
     {
         $tenant->addUser($this);
         $this->tenant = $tenant;
+
+        return $this;
     }
 }

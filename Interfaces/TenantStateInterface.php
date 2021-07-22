@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\TenantBundle;
-
-use App\TenantBundle\Interfaces\ResetInterface;
+namespace App\TenantBundle\Interfaces;
 
 /**
  * Interface TenantInterface

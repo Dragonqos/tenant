@@ -2,8 +2,8 @@
 
 namespace App\TenantBundle\Component;
 
-use App\TenantBundle\TenantInterface;
-use App\TenantBundle\TenantStateInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
+use App\TenantBundle\Interfaces\TenantStateInterface;
 
 /**
  * Class TenantState

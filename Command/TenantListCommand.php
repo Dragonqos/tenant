@@ -2,13 +2,11 @@
 
 namespace App\TenantBundle\Command;
 
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\ObjectManager;
-use App\TenantBundle\Entity\Tenant;
+use App\TenantBundle\Interfaces\TenantInterface;
+use App\TenantBundle\Interfaces\TenantProviderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -17,29 +15,27 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class TenantListCommand extends Command
 {
-
-    private ManagerRegistry $managerRegistry;
+    private TenantProviderInterface $provider;
 
     /**
      * TenantListCommand constructor.
-     * @param ManagerRegistry $managerRegistry
+     * @param TenantProviderInterface $provider
      * @param string|null $name
      */
     public function __construct(
-        ManagerRegistry $managerRegistry,
+        TenantProviderInterface $provider,
         ?string $name = null
     ) {
-        $this->managerRegistry = $managerRegistry;
+        $this->provider = $provider;
         parent::__construct($name);
     }
 
     /**
-     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     *
      */
     protected function configure(): void
     {
         $this->setName('tenant:list')
-            ->addOption('all', 'a', InputOption::VALUE_NONE, 'Show deleted tenants')
             ->setDescription('Show available tenants');
     }
 
@@ -51,48 +47,21 @@ class TenantListCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $showDeleted = $input->getOption('all');
-        
-        $tenantCollection = $this->getManager(Tenant::class)
-            ->getRepository(Tenant::class)
-            ->findAll($showDeleted);
-        
-        $collection = array_map(function (Tenant $value) {
+        $tenantCollection = $this->provider->findAll();
+
+        $collection = array_map(function (TenantInterface $value) {
             $out[] = $value->getId();
             $out[] = $value->getName();
-            $out[] = $value->getOrganization()->getEmail();
             $out[] = $value->isEnabled() ? 'true' : 'false';
-            $out[] = $value->isDeleted() ? 'true' : 'false';
-            
+
             return $out;
         }, $tenantCollection);
         
         $table = new Table($output);
-        
-        $table->setHeaders(['ID', 'Name', 'Email', 'Is Active', 'Is deleted'])
+        $table->setHeaders(['ID', 'Name', 'Is Active'])
             ->setRows($collection);
         
         $table->render();
         return 0;
-    }
-    
-    /**
-     * @param string $className
-     *
-     * @return ObjectManager
-     *
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
-     * @throws \LogicException
-     */
-    private function getManager(string $className): ObjectManager
-    {
-        $manager = $this->managerRegistry->getManagerForClass($className);
-        
-        if (!$manager instanceof ObjectManager) {
-            throw new \LogicException('');
-        }
-        
-        return $manager;
     }
 }

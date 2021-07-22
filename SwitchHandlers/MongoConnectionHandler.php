@@ -2,7 +2,7 @@
 
 namespace App\TenantBundle\SwitchHandlers;
 
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use App\TenantBundle\Interfaces\TenantSwitchHandlerInterface;

@@ -3,15 +3,15 @@
 namespace App\TenantBundle\Provider;
 
 use App\TenantBundle\Interfaces\TenantProviderInterface;
-use App\TenantBundle\TenantInterface;
+use App\TenantBundle\Interfaces\TenantInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * Class DoctrineTenantProvider
+ * Class TenantProvider
  * @package App\TenantBundle\Provider
  */
-class DoctrineTenantProvider implements TenantProviderInterface
+class TenantProvider implements TenantProviderInterface
 {
     private ManagerRegistry $managerRegistry;
     private string $tableName;
@@ -28,10 +28,19 @@ class DoctrineTenantProvider implements TenantProviderInterface
     }
 
     /**
-     * @param $tenantIdentifier
+     * @return iterable
+     */
+    public function findAll(): iterable
+    {
+        return $this->getRepository()->findAll();
+    }
+
+
+    /**
+     * @param string $tenantIdentifier
      * @return TenantInterface|null
      */
-    public function findByIdOrName($tenantIdentifier): ?TenantInterface
+    public function findByIdOrName(string $tenantIdentifier): ?TenantInterface
     {
         $name = is_numeric($tenantIdentifier)
             ? (int) $tenantIdentifier
@@ -60,16 +69,6 @@ class DoctrineTenantProvider implements TenantProviderInterface
     }
 
     /**
-     * @return EntityRepository
-     */
-    private function getRepository(): EntityRepository
-    {
-        return $this->managerRegistry
-            ->getManagerForClass(TenantInterface::class)
-            ->getRepository(TenantInterface::class);
-    }
-
-    /**
      * @param TenantInterface $tenant
      * @return bool
      */
@@ -81,4 +80,28 @@ class DoctrineTenantProvider implements TenantProviderInterface
 
         return true;
     }
+
+    /**
+     * @param TenantInterface $tenant
+     * @return bool
+     */
+    public function remove(TenantInterface $tenant): bool
+    {
+        $repo = $this->getRepository();
+        $repo->remove($tenant);
+        $repo->flush();
+
+        return true;
+    }
+
+    /**
+     * @return EntityRepository
+     */
+    private function getRepository(): EntityRepository
+    {
+        return $this->managerRegistry
+            ->getManagerForClass(TenantInterface::class)
+            ->getRepository(TenantInterface::class);
+    }
+
 }

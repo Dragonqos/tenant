@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\TenantBundle\Factory;
+namespace App\TenantBundle\Factory\ORM;
 
 use App\TenantBundle\Entity\TenantUser;
 use App\TenantBundle\Interfaces\FactoryInterface;
@@ -22,8 +22,7 @@ class UserFactory implements FactoryInterface{
      */
     public function __construct(
         TenantUserProviderInterface $provider
-    )
-    {
+    ) {
         $this->provider = $provider;
     }
 
