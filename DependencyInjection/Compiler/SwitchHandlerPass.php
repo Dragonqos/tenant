@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class SwitchHandlerPass implements CompilerPassInterface
 {
-    const SWITCH_HANDLER_TAG = 'helix.tenant.switch_handler';
+    const SWITCH_HANDLER_TAG = 'tenant.switch_handler';
 
     /**
      * @param ContainerBuilder $container

@@ -3,11 +3,11 @@
 namespace App\TenantBundle\Model;
 
 use App\TenantBundle\Entity\Tenant;
+use App\TenantBundle\Interfaces\TenantInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Core\Annotation\ApiProperty;
-use Helix\UserBundle\Models\Accessor;
+use App\UserBundle\Models\Accessor;
 
 /**
  * Class TenantUserModel
@@ -42,7 +42,6 @@ class TenantUserModel implements UserInterface
      * @ORM\ManyToOne(targetEntity="App\TenantBundle\Entity\Tenant", inversedBy="users", cascade={"persist"})
      * @Groups({"tenant_get", "super_user_put"})
      * @ORM\JoinColumn(name="tenant", referencedColumnName="id", nullable=true)
-     * @ApiProperty(iri="/Tenant")
      */
     protected $tenant;
 
@@ -121,17 +120,17 @@ class TenantUserModel implements UserInterface
     protected $passwordRequestedAt;
 
     /**
-     * @return Tenant
+     * @return TenantInterface
      */
-    public function getTenant(): Tenant
+    public function getTenant(): TenantInterface
     {
         return $this->tenant;
     }
 
     /**
-     * @param Tenant $tenant
+     * @param TenantInterface $tenant
      */
-    public function setTenant(Tenant $tenant)
+    public function setTenant(TenantInterface $tenant)
     {
         $tenant->addUser($this);
         $this->tenant = $tenant;

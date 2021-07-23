@@ -48,25 +48,14 @@ class LocatorChainTest extends TestCase
 
     /**
      * covers LocatorChain::locate()
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Could not locate a tenant from the request
      */
     public function testThrowExceptionWhenTenantNotFound()
     {
+        self::expectException(\RuntimeException::class);
+        self::expectExceptionMessage('Could not locate a tenant from the request');
         $request = Request::create('http://mysite.dev?code=query_acme_co');
 
         self::assertEquals('header_acme_co', $this->locator->locate($request));
-    }
-
-    /**
-     * covers LocatorChain::addLocator()
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Locator stdClass must be subclass of App\TenantBundle\Interfaces\TenantLocatorInterface
-     */
-    public function testShouldNotAddLocator()
-    {
-        $locator = new LocatorChain(['request_attribute' => 'tenant']);
-        $locator->addLocator(new \stdClass);
     }
 
     /**

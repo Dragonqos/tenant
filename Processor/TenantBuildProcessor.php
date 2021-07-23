@@ -10,8 +10,8 @@ use Interop\Queue\Processor;
 use Psr\Log\LogLevel;
 
 /**
- * Class AggregateProjectionProcessor
- * @package Helix\EventAggregateBundle\Processor
+ * Class TenantBuildProcessor
+ * @package App\TenantBundle\Processor
  */
 class TenantBuildProcessor implements Processor, CommandSubscriberInterface
 {

@@ -2,10 +2,10 @@
 
 namespace App\TenantBundle\Tests\Unit\DependencyInjection\Compiler;
 
+use PHPUnit\Framework\TestCase;
 use App\TenantBundle\Component\TenantResolver;
 use App\TenantBundle\DependencyInjection\Compiler\SwitchHandlerPass;
 use App\TenantBundle\SwitchHandlers\MysqlConnectionHandler;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;

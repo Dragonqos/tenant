@@ -30,20 +30,12 @@ class LocatorChain
     }
 
     /**
-     * @param $locator
+     * @param TenantLocatorInterface $locator
      */
-    public function addLocator($locator): void
+    public function addLocator(TenantLocatorInterface $locator): void
     {
-        if (is_subclass_of($locator, TenantLocatorInterface::class, true)) {
-            $locatorName = $this->filterLocatorName($locator);
-            $this->locators[$locatorName] = $locator;
-        } else {
-            throw new \InvalidArgumentException(sprintf(
-                'Locator %s must be subclass of %s',
-                is_object($locator) ? get_class($locator) : $locator,
-                TenantLocatorInterface::class
-            ));
-        }
+        $locatorName = $this->filterLocatorName($locator);
+        $this->locators[$locatorName] = $locator;
     }
 
     /**
@@ -75,7 +67,7 @@ class LocatorChain
      * @param Request $request
      * @return string
      */
-    public function locate(Request $request)
+    public function locate(Request $request): ?string
     {
         $processed = null;
 
@@ -103,7 +95,7 @@ class LocatorChain
      *
      * @return string
      */
-    private function filterLocatorName($locator)
+    private function filterLocatorName($locator): string
     {
         $locator = is_object($locator) ? get_class($locator) : $locator;
         return trim($locator, '\\');

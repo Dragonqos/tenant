@@ -17,10 +17,7 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class LocatorPassTest extends TestCase
 {
-    /**
-     * @var CompilerPassInterface
-     */
-    protected $pass;
+    protected CompilerPassInterface $pass;
 
     protected function setUp()
     {

@@ -28,11 +28,9 @@ class HostnameLocatorTest extends TestCase
         self::assertEquals('tenant1', $locator->getTenantFromRequest($request));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testThrowExceptionWhenTenantCodeIsNotInTheUrl()
     {
+        self::expectException(\RuntimeException::class);
         $request = Request::create('http://mysite.dev');
 
         $locator = new HostnameLocator($request);
@@ -51,11 +49,10 @@ class HostnameLocatorTest extends TestCase
         self::assertEquals('tenant1', $locator->getTenantFromRequest($request));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testShouldNotMatchTenantWithCustomSubDomainPattern()
     {
+        self::expectException(\RuntimeException::class);
+
         $request = Request::create('http://_tenant1.mysite.dev');
 
         $locator = new HostnameLocator($request);

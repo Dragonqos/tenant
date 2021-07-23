@@ -73,7 +73,7 @@ class TenantCreateCommand extends Command
             $output->writeln('<bg=red;options=bold>Can\'t create database. The command has exited with code %d</>', $databaseExitCode);
         }
         
-        $schemaExitCode = $this->commandRunner->runCommand('helix:migrations:migrate', sprintf('-n --tenant=%s', $tenant->getId()));
+        $schemaExitCode = $this->commandRunner->runCommand('doctrine:migrations:migrate', sprintf('-n --tenant=%s', $tenant->getId()));
         if ($schemaExitCode !== 0) {
             $output->writeln('<bg=red;options=bold>Can\'t apply schema. The command has exited with code %d</>', $schemaExitCode);
         }

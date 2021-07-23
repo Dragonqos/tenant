@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class CommandRunner
- * @package Helix\CommandBundle\Engine
+ * @package App\TenantBundle\Engine
  */
 class CommandRunner
 {

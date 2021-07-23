@@ -5,12 +5,7 @@ namespace App\TenantBundle\Locators;
 use App\TenantBundle\Interfaces\TenantUserInterface;
 use App\TenantBundle\Interfaces\TenantUserProviderInterface;
 use App\TenantBundle\Interfaces\TenantInterface;
-use Doctrine\Persistence\ManagerRegistry;
-use Helix\SuperuserBundle\Entity\Superuser;
-use App\TenantBundle\Entity\Tenant;
-use App\TenantBundle\Entity\TenantUser;
 use App\TenantBundle\Interfaces\TenantLocatorInterface;
-use App\TenantBundle\Model\TenantUserModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\RememberMe\AbstractRememberMeServices;
 

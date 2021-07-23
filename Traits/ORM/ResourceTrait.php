@@ -8,8 +8,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * Class ResourceTrait
- * @package Helix\CoreBundle\Mixins
+ * Trait ResourceTrait
+ * @package App\TenantBundle\Traits\ORM
  */
 trait ResourceTrait
 {

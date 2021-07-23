@@ -4,9 +4,7 @@ namespace App\TenantBundle\Manager;
 
 use App\TenantBundle\Factory\ResourceAbstractFactory;
 use Doctrine\Persistence\ManagerRegistry;
-use Helix\CommandBundle\Engine\CommandRunner;
-use Helix\PlatformBundle\Entity\Repository\RoleRepository;
-use Helix\PlatformBundle\Entity\User;
+use App\TenantBundle\Engine\CommandRunner;
 use App\TenantBundle\Component\TenantResolver;
 use App\TenantBundle\Repository\TenantInstallRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -150,7 +148,7 @@ class TenantInstallManager
 
         if($tenantId > 0 && $currentState < self::SCHEMA_CREATED) {
 
-            $exitCode = $this->commandRunner->runCommand('helix:migrations:migrate', sprintf('-n --tenant=%s', $tenantId));
+            $exitCode = $this->commandRunner->runCommand('doctrine:migrations:migrate', sprintf('-n --tenant=%s', $tenantId));
             if ($exitCode !== 0) {
                 $this->repository->putErrorMessage($uuid, 'Failed to setup database schema for your company. Ask our support team to help you.');
                 return false;

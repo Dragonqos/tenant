@@ -1,5 +1,6 @@
 .env
 /.idea
 /vendor/
-/docker/db/*
-/docker/runtime/*
+/docker
+/docker-compose.yml
+/composer.lock

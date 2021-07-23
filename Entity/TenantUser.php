@@ -3,8 +3,6 @@
 namespace App\TenantBundle\Entity;
 
 use App\TenantBundle\Interfaces\TenantUserInterface;
-use App\TenantBundle\Model\TenantUserModel;
-use ApiPlatform\Core\Annotation\ApiResource;
 use App\TenantBundle\Interfaces\TenantInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
@@ -19,16 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
  * Exept of tenant's users all emails and usernames in this tables are not unique.
  * We keep unique tenant_id and email
  *
- * @ApiResource(
- *     itemOperations={
- *          "get"={
- *              "method"="GET",
- *          }
- *     },
- *     collectionOperations={},
- *     iri="/TenantUser"
- * )
- *
  * @ORM\Entity()
  * @ORM\Table(name="tenant_users")
  * @ORM\HasLifecycleCallbacks()
@@ -42,6 +30,15 @@ class TenantUser implements TenantUserInterface
      * @Groups({"tenant_get"})
      */
     protected $uid;
+
+    /**
+     * @var TenantInterface
+     *
+     * @ORM\ManyToOne(targetEntity="App\TenantBundle\Entity\Tenant", inversedBy="users", cascade={"persist"})
+     * @Groups({"get"})
+     * @ORM\JoinColumn(name="tenant", referencedColumnName="id", nullable=true)
+     */
+    protected $tenant;
 
     /**
      * @return int
@@ -69,6 +66,7 @@ class TenantUser implements TenantUserInterface
 
     /**
      * @param TenantInterface $tenant
+     * @return $this
      */
     public function setTenant(TenantInterface $tenant): self
     {

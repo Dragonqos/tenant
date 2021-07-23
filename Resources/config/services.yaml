@@ -1,9 +1,10 @@
 parameters:
-    helix_tenant.request_attribute: tenant
-    helix_tenant.routes:
+    tenant.request_attribute: tenant
+    tenant.routes:
         - { path: ^/api, anonymous: false }
         - { path: ^/another_path, anonymous: false }
-    helix_tenant.commands:
+        - { path: ^/api/callback, anonymous: true }
+    tenant.commands:
         - doctrine:database:create
         - doctrine:database:drop
         - doctrine:database:import
@@ -41,7 +42,6 @@ services:
         resource: '../../Command/*'
         tags: ['console.command']
 
-    App\TenantBundle\Controller\RegisterController: ~
     App\TenantBundle\Repository\TenantInstallRepository: ~
 
 
@@ -96,23 +96,23 @@ services:
             $password: '%env(DATABASE_PASSWORD)%'
             $port: '%env(DATABASE_PORT)%'
         tags:
-            - { name: helix.tenant.switch_handler }
+            - { name: tenant.switch_handler }
 
     App\TenantBundle\SwitchHandlers\MongoConnectionHandler:
         tags:
-            - { name: helix.tenant.switch_handler }
+            - { name: tenant.switch_handler }
 
     App\TenantBundle\SwitchHandlers\DirectoryHandler:
         tags:
-            - { name: helix.tenant.switch_handler }
+            - { name: tenant.switch_handler }
 
     App\TenantBundle\SwitchHandlers\LoggerHandler:
         tags:
-            - { name: helix.tenant.switch_handler }
+            - { name: tenant.switch_handler }
 
     App\TenantBundle\SwitchHandlers\CacheHandler:
         tags:
-            - { name: helix.tenant.switch_handler }
+            - { name: tenant.switch_handler }
         arguments:
             - '@snc_redis.cache'
 
@@ -122,39 +122,39 @@ services:
     App\TenantBundle\Locators\LocatorChain:
         public: false
         arguments:
-            - '%helix_tenant.request_attribute%'
+            - '%tenant.request_attribute%'
 
     App\TenantBundle\Locators\GetParameterLocator:
         public: false
         tags:
-            - { name: helix.tenant.locators }
+            - { name: tenant.locators }
 
     App\TenantBundle\Locators\UserCookieLocator:
         public: false
         arguments:
             $cookieParameterName: 'PLATFORM_AREA'
         tags:
-            - { name: helix.tenant.locators }
+            - { name: tenant.locators }
 
     App\TenantBundle\Locators\LoginRequestLocator:
         public: false
         tags:
-            - { name: helix.tenant.locators }
+            - { name: tenant.locators }
 
     App\TenantBundle\Locators\ForgotPasswordRequestLocator:
         public: false
         tags:
-            - { name: helix.tenant.locators }
+            - { name: tenant.locators }
 
     App\TenantBundle\Locators\ConfirmationTokenLocator:
         public: false
         tags:
-            - { name: helix.tenant.locators }
+            - { name: tenant.locators }
 
     App\TenantBundle\Locators\HeaderLocator:
         public: false
         tags:
-            - { name: helix.tenant.locators }
+            - { name: tenant.locators }
 
     # KERNEL SUBSCRIBERS
 
@@ -166,14 +166,14 @@ services:
     App\TenantBundle\EventListener\TenantSubscriber:
         public: false
         arguments:
-            $routes: '%helix_tenant.routes%'
+            $routes: '%tenant.routes%'
         tags:
             - { name: kernel.event_subscriber }
 
     App\TenantBundle\EventListener\CommandSubscriber:
         public: false
         arguments:
-            $commands: '%helix_tenant.commands%'
+            $commands: '%tenant.commands%'
         calls:
             - [ setLogger, ['@?logger'] ]
         tags:

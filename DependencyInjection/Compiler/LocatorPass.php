@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class LocatorPass implements CompilerPassInterface
 {
-    const LOAD_TENANT_LOCATORS_TAG = 'helix.tenant.locators';
+    const LOAD_TENANT_LOCATORS_TAG = 'tenant.locators';
 
     /**
      * {@inheritDoc}
